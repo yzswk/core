@@ -17,8 +17,8 @@ RUN echo "deb http://mirrors.aliyun.com/debian bullseye main contrib non-free" >
     echo "deb-src http://mirrors.aliyun.com/debian bullseye main contrib non-free" >> /etc/apt/sources.list  && \
     echo "deb http://mirrors.aliyun.com/debian bullseye-updates main contrib non-free" >> /etc/apt/sources.list && \
     echo "deb-src http://mirrors.aliyun.com/debian bullseye-updates main contrib non-free" >> /etc/apt/sources.list && \
-    echo "deb http://mirrors.aliyun.com/debian-security bullseye/updates main contrib non-free" >> /etc/apt/sources.list && \
-    echo "deb-src http://mirrors.aliyun.com/debian-security bullseye/updates main contrib non-free" >> /etc/apt/sources.list
+    echo "deb https://mirrors.aliyun.com/debian-security/ bullseye-security main" >> /etc/apt/sources.list && \
+    echo "deb-src https://mirrors.aliyun.com/debian-security/ bullseye-security main" >> /etc/apt/sources.list
 
 RUN \
     curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
