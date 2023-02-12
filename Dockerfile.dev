@@ -11,6 +11,8 @@ RUN pipx uninstall pycodestyle
 RUN pipx uninstall mypy
 RUN pipx uninstall pylint
 
+RUN mv /etc/apt/sources.list /etc/apt/sources.list.bak
+RUN touch /etc/apt/sources.list
 RUN echo "deb http://mirrors.aliyun.com/debian bullseye main contrib non-free" > /etc/apt/sources.list && \
     echo "deb-src http://mirrors.aliyun.com/debian bullseye main contrib non-free" >> /etc/apt/sources.list  && \
     echo "deb http://mirrors.aliyun.com/debian bullseye-updates main contrib non-free" >> /etc/apt/sources.list && \
