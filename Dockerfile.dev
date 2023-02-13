@@ -13,12 +13,18 @@ RUN pipx uninstall pylint
 
 RUN mv /etc/apt/sources.list /etc/apt/sources.list.bak
 RUN touch /etc/apt/sources.list
+# RUN sed -i "s@http://\(security.ubuntu.com\|archive.ubuntu.com\)@http://mirrors.aliyun.com@g" /etc/apt/sources.list \
 RUN echo "deb http://mirrors.aliyun.com/debian bullseye main contrib non-free" > /etc/apt/sources.list && \
     echo "deb-src http://mirrors.aliyun.com/debian bullseye main contrib non-free" >> /etc/apt/sources.list  && \
     echo "deb http://mirrors.aliyun.com/debian bullseye-updates main contrib non-free" >> /etc/apt/sources.list && \
     echo "deb-src http://mirrors.aliyun.com/debian bullseye-updates main contrib non-free" >> /etc/apt/sources.list && \
     echo "deb https://mirrors.aliyun.com/debian-security/ bullseye-security main" >> /etc/apt/sources.list && \
+    #echo "deb http://deb.debian.org/debian bullseye main" >> /etc/apt/sources.list && \
+    #echo "deb-src http://deb.debian.org/debian bullseye main" >> /etc/apt/sources.list && \
     echo "deb-src https://mirrors.aliyun.com/debian-security/ bullseye-security main" >> /etc/apt/sources.list
+    
+
+
 
 RUN \
     curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
@@ -40,17 +46,37 @@ RUN \
         libxml2 \
         git \
         cmake \
+        openssh-server \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /usr/src
 
 # Setup hass-release
-RUN git clone --depth 1 https://github.com/home-assistant/hass-release \
+#https://github.com/home-assistant/hass-release
+#https://gitee.com/yzswk/hass-release
+#fatal: could not read Username for 'https://gitee.com': No such device or address
+RUN git clone --depth 1 https://github.com/home-assistant/hass-release\
+#RUN git clone --depth 1 https://gitee.com/yzswk/hass-release \
     && pip3 install -e hass-release/
 
 WORKDIR /workspaces
 
+#ssh免密登录
+RUN mkdir -p /var/run/sshd \
+    && sed -i "s/#PermitRootLogin prohibit-password/PermitRootLogin yes/g" /etc/ssh/sshd_config
+
+RUN mkdir -p ~/tmp
+COPY id_rsa.pub /root/tmp/tmp.pub
+RUN cd ~/tmp \
+	&& mkdir -p ~/.ssh \
+    && chmod 700 ~/.ssh \
+    && cat tmp.pub >> ~/.ssh/authorized_keys \
+    && chmod 600 ~/.ssh/authorized_keys
+	RUN rm -rf ~/tmp
+
+# 更换清华源
+RUN pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
 # Install Python dependencies from requirements
 COPY requirements.txt ./
 COPY homeassistant/package_constraints.txt homeassistant/package_constraints.txt
